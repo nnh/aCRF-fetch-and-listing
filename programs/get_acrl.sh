@@ -65,6 +65,14 @@ function main(){
         sed -e "s|/trials/${trial_name}/sheets|\.|" ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
         mv ${g_temp_folder_path}temp.html ${g_trial_path}${output_html_name}
     done 
+    # Upload files.
+    readonly parent_bucket_name=$(echo ${output_base_url} | sed -e 's|https://||' -e 's/\..*//')
+    readonly upload_s3_url=s3://${parent_bucket_name}/
+    readonly folder_existence_check=$(aws s3 ls ${upload_s3_url}| grep ${aws_dir_name})
+    if [ -z "$folder_existence_check" ]; then
+        aws s3 mb ${upload_s3_url}${aws_dir_name}
+    fi
+    aws s3 cp ${g_trial_path} ${upload_s3_url}${aws_dir_name} --recursive
     exit 0
 }
 main $1 $2
