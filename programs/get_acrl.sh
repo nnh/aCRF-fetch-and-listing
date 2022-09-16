@@ -3,7 +3,7 @@
 # get_acrf.sh
 # Download all aCRF with the specified trial name. Depends on get_folder_path.sh.
 # Created Date 2022.9.7
-# Revision Date 2022.9.7
+# Revision Date 2022.9.16
 
 # Download the CSS files.
 # $1 Name of HTML file.
@@ -30,9 +30,14 @@ function get_css(){
 # $2 The sign-in Password in single quotes.
 # $3 The trial name in single quotes.
 function main(){
-    readonly local base_url=$(cat ../base_url)
+    readonly local base_url=$(cat ../input_base_url)
     if [[ ! ${base_url} =~ ^https.*$ ]]; then
-          echo "No mention of base url."
+          echo "No mention of input base url."
+          exit 255
+    fi
+    readonly local output_base_url=$(cat ../output_base_url)
+    if [[ ! ${output_base_url} =~ ^https.*$ ]]; then
+          echo "No mention of output base url."
           exit 255
     fi
     readonly local trial_name="$2"
@@ -43,6 +48,8 @@ function main(){
     readonly local csrf_token=$(curl -sS -L -c ${g_temp_folder_path}login.cookie1 "${signin_url}" | grep csrf-token | sed -e  's/.*content\=\"//g'  | sed -e 's/\" \/.*//g')
     curl -sS -L -F "user[email]=${id}" -F "user[password]=${password}" -F "authenticity_token=${csrf_token}" -b ${g_temp_folder_path}login.cookie1 -c ${g_temp_folder_path}login.cookie2 "${signin_url}" -o ${g_temp_folder_path}test1.html
     readonly local trial_url="${base_url}/trials/${trial_name}/sheets"
+    readonly local aws_dir_name=$(echo ${trial_name} | tr '[:upper:]' '[:lower:]')
+    curl -sS -b ${g_temp_folder_path}login.cookie2 ${trial_url} | grep '<a href=.*edit"' | sed -e "s|/trials/${trial_name}/sheets/|${output_base_url}${aws_dir_name}/|g" -e 's|/edit|.html|' -e 's|$|<br>|g' > ${g_trial_path}index.html
     readonly local aCrf_head='<a href\="'
     readonly local aCrf_foot='">aCRF<\/a>'
     readonly local target_html_list=$(curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}" | grep "${aCrf_head}.*${aCrf_foot}" | sed -e "s|${aCrf_head}|${base_url}|g" | sed -e "s/${aCrf_foot}//g")
@@ -58,6 +65,14 @@ function main(){
         sed -e "s|/trials/${trial_name}/sheets|\.|" ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
         mv ${g_temp_folder_path}temp.html ${g_trial_path}${output_html_name}
     done 
+    # Upload files.
+    readonly parent_bucket_name=$(echo ${output_base_url} | sed -e 's|https://||' -e 's/\..*//')
+    readonly upload_s3_url=s3://${parent_bucket_name}/
+    readonly folder_existence_check=$(aws s3 ls ${upload_s3_url}| grep ${aws_dir_name})
+    if [ -z "$folder_existence_check" ]; then
+        aws s3 mb ${upload_s3_url}${aws_dir_name}
+    fi
+    aws s3 cp ${g_trial_path} ${upload_s3_url}${aws_dir_name} --recursive
     exit 0
 }
 main $1 $2
