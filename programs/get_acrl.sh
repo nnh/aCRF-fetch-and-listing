@@ -47,9 +47,18 @@ function main(){
     readonly local signin_url="${base_url}/users/sign_in"
     readonly local csrf_token=$(curl -sS -L -c ${g_temp_folder_path}login.cookie1 "${signin_url}" | grep csrf-token | sed -e  's/.*content\=\"//g'  | sed -e 's/\" \/.*//g')
     curl -sS -L -F "user[email]=${id}" -F "user[password]=${password}" -F "authenticity_token=${csrf_token}" -b ${g_temp_folder_path}login.cookie1 -c ${g_temp_folder_path}login.cookie2 "${signin_url}" -o ${g_temp_folder_path}test1.html
-    readonly local trial_url="${base_url}/trials/${trial_name}/sheets"
+    readonly local trial_url="${base_url}trials/${trial_name}/sheets"
     readonly local aws_dir_name=$(echo ${trial_name} | tr '[:upper:]' '[:lower:]')
-    curl -sS -b ${g_temp_folder_path}login.cookie2 ${trial_url} | grep '<a href=.*edit"' | sed -e "s|/trials/${trial_name}/sheets/|${output_base_url}${aws_dir_name}/|g" -e 's|/edit|.html|' -e 's|$|<br>|g' > ${g_trial_path}index.html
+    readonly local index_html=${g_trial_path}index.html
+    echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=SHIFT_JIS">' > ${index_html}
+    echo '<style>' >> ${index_html}
+    echo 'ol {background-color:#ffffff;border-bottom:solid 1px #cccccc;}' >> ${index_html}
+    echo 'li {border-top:solid 1px #cccccc;padding:10px 20px;}' >> ${index_html}
+    echo 'a {font-size:16px;color:#000000;}' >> ${index_html}
+    echo '</style>' >> ${index_html}
+    echo '<ol>' >> ${index_html}
+    curl -sS -b ${g_temp_folder_path}login.cookie2 ${trial_url} | grep '<a href=.*edit"' | sed -e "s|/trials/${trial_name}/sheets/|${output_base_url}${aws_dir_name}/|g" -e 's|/edit|.html|' -e 's|$|</li>|g' -e 's|<a href=|<li><a href=|g' >> ${index_html}
+    echo '</ol>' >> ${index_html}
     readonly local aCrf_head='<a href\="'
     readonly local aCrf_foot='">aCRF<\/a>'
     readonly local target_html_list=$(curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}" | grep "${aCrf_head}.*${aCrf_foot}" | sed -e "s|${aCrf_head}|${base_url}|g" | sed -e "s/${aCrf_foot}//g")
@@ -66,9 +75,9 @@ function main(){
         mv ${g_temp_folder_path}temp.html ${g_trial_path}${output_html_name}
     done 
     # Upload files.
-    readonly parent_bucket_name=$(echo ${output_base_url} | sed -e 's|https://||' -e 's/\..*//')
-    readonly upload_s3_url=s3://${parent_bucket_name}/
-    readonly folder_existence_check=$(aws s3 ls ${upload_s3_url}| grep ${aws_dir_name})
+    readonly local parent_bucket_name=$(echo ${output_base_url} | sed -e 's|https://||' -e 's/\..*//')
+    readonly local upload_s3_url=s3://${parent_bucket_name}/
+    readonly local folder_existence_check=$(aws s3 ls ${upload_s3_url}| grep ${aws_dir_name})
     if [ -z "$folder_existence_check" ]; then
         aws s3 mb ${upload_s3_url}${aws_dir_name}
     fi
