@@ -10,7 +10,7 @@ https://docs.google.com/document/d/1VIDNu52ukYVhh0xlitPxDEc3gJs2uPOrA7hjZTxtbIw
 - ./input_base_urlに入力元サイトのURLを`https://...com/`のように記載する  
 - ./output_base_urlにリンク先サイトのURLを`https://...com/`のように記載する  
 - ターミナルで`cd programs` 
-`sh get_acrl.sh 'ユーザー名' '試験名'`と打って実行する  
+`sh get_acrl.sh 'ユーザー名' '試験名'`と打って実行する。試験名はURL内のものと同一の文字列を入力する。  
 - ./output/試験名フォルダとaws s3の指定されたバケットにダウンロードされたファイルが格納される  
 ## acrf.jp修正手順  
 - ./output/試験名フォルダ/index.htmlをテキストエディタで開く
