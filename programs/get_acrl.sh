@@ -52,6 +52,7 @@ function main(){
     readonly local index_html=${g_trial_path}index.html
     echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=SHIFT_JIS">' > ${index_html}
     echo '<style>' >> ${index_html}
+    echo 'body {font-family: sans-serif;}' >> ${index_html}
     echo 'ol {background-color:#ffffff;border-bottom:solid 1px #cccccc;}' >> ${index_html}
     echo 'li {border-top:solid 1px #cccccc;padding:10px 20px;}' >> ${index_html}
     echo 'a {font-size:16px;color:#000000;}' >> ${index_html}
