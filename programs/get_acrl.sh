@@ -72,7 +72,7 @@ function main(){
         curl -sS -b ${g_temp_folder_path}login.cookie2 ${target_html} > ${g_trial_path}${output_html_name}
         get_css ${output_html_name}
         # Rewrite CSS references to relative paths. Remove unnecessary a tag.
-        sed -e "s|/trials/${trial_name}/sheets|\.|" -e 's|<a href="/">ホーム</a>|ホーム|' -e 's|<a id="sign_out" rel="nofollow" data-method="delete" href="/users/sign_out">ログアウト</a>|ログアウト|' -e 's|<a target="_blank" id="help" href="/welcome/help">ヘルプ</a>|ヘルプ|' -e 's|<a href="mailto:.*%0D%0A||' -e 's|施設:.*%0D%0A||' -e 's|URL:.*%0D%0A||' -e 's|以下に問い合わせ内容を記載して送信してください。%0D%0A||' -e 's|%0D%0A||' -e 's|">データセンターに連絡</a>|データセンターに連絡|' ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
+        sed -e "s|/trials/${trial_name}/sheets|\.|" -e 's|<a href="/">ホーム</a>|ホーム|' -e 's|<a id="sign_out" rel="nofollow" data-method="delete" href="/users/sign_out">ログアウト</a>|ログアウト|' -e 's|<a target="_blank" id="help" href="/welcome/help">ヘルプ</a>|ヘルプ|' -e 's|<a href="mailto:.*%0D%0A||' -e 's|施設:.*%0D%0A||' -e 's|URL:.*%0D%0A||' -e 's|以下に問い合わせ内容を記載して送信してください。%0D%0A||' -e 's|%0D%0A||' -e 's|">データセンターに連絡</a>|データセンターに連絡|' -e 's|.*名古屋医療センター.*||' ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
         #sed -e "s|/trials/${trial_name}/sheets|\.|" ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
         mv ${g_temp_folder_path}temp.html ${g_trial_path}${output_html_name}
     done 
