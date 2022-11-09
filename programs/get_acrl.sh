@@ -3,7 +3,7 @@
 # get_acrf.sh
 # Download all aCRF with the specified trial name. Depends on get_folder_path.sh.
 # Created Date 2022.9.7
-# Revision Date 2022.9.16
+# Revision Date 2022.11.9
 
 # Download the CSS files.
 # $1 Name of HTML file.
@@ -55,7 +55,7 @@ function main(){
     echo 'body {font-family: sans-serif;}' >> ${index_html}
     echo 'ol {background-color:#ffffff;border-bottom:solid 1px #cccccc;}' >> ${index_html}
     echo 'li {border-top:solid 1px #cccccc;padding:10px 20px;}' >> ${index_html}
-    echo 'a {font-size:16px;color:#000000;}' >> ${index_html}
+    echo 'a {font-size:16px;color:#000000;text-decoration: none;}' >> ${index_html}
     echo '</style>' >> ${index_html}
     echo '<ol>' >> ${index_html}
     curl -sS -b ${g_temp_folder_path}login.cookie2 ${trial_url} | grep '<a href=.*edit"' | sed -e "s|/trials/${trial_name}/sheets/|${output_base_url}${aws_dir_name}/|g" -e 's|/edit|.html|' -e 's|$|</li>|g' -e 's|<a href=|<li><a href=|g' >> ${index_html}
@@ -71,8 +71,8 @@ function main(){
         local output_html_name=${target_sheet_name}${g_html_extension}
         curl -sS -b ${g_temp_folder_path}login.cookie2 ${target_html} > ${g_trial_path}${output_html_name}
         get_css ${output_html_name}
-        # Rewrite CSS references to relative paths.
-        sed -e "s|/trials/${trial_name}/sheets|\.|" ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
+        # Rewrite CSS references to relative paths. Remove unnecessary a tag.
+        sed -e "s|/trials/${trial_name}/sheets|\.|" -e 's|<a href="/">ホーム</a>|ホーム|' -e 's|<a id="sign_out" rel="nofollow" data-method="delete" href="/users/sign_out">ログアウト</a>|ログアウト|' -e 's|<a target="_blank" id="help" href="/welcome/help">ヘルプ</a>|ヘルプ|' -e 's|<a href="mailto:.*%0D%0A||' -e 's|施設:.*%0D%0A||' -e 's|URL:.*%0D%0A||' -e 's|以下に問い合わせ内容を記載して送信してください。%0D%0A||' -e 's|%0D%0A||' -e 's|">データセンターに連絡</a>|データセンターに連絡|' -e 's|.*名古屋医療センター.*||' ${g_trial_path}${output_html_name} > ${g_temp_folder_path}temp.html
         mv ${g_temp_folder_path}temp.html ${g_trial_path}${output_html_name}
     done 
     # Upload files.
