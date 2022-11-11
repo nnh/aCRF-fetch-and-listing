@@ -10,24 +10,29 @@
 # $2 The sign-in Password in single quotes.
 # $3 The trial name in single quotes.
 function main(){
-    readonly local base_url=$(cat ../input_base_url)
-    if [[ ! ${base_url} =~ ^https.*$ ]]; then
-          echo "No mention of input base url."
-          exit 255
-    fi
-    readonly local output_base_url=$(cat ../output_base_url)
-    if [[ ! ${output_base_url} =~ ^https.*$ ]]; then
-          echo "No mention of output base url."
-          exit 255
-    fi
-    readonly local trial_name="$2"
-    source ./get_folder_path.sh ${trial_name} 
     readonly local id="$1"
+    readonly local trial_name="$2"
+    source ./common.sh 
+    get_base_url
+    if [[ $? -ne 0 ]]; then
+        echo "error: get_base_url"
+        exit 255
+    fi
+    get_folder_main ${trial_name}
+    if [[ $? -ne 0 ]]; then
+        echo "error: get_folder_main"
+        exit 255
+    fi
     read -p 'Password: ' password
-    readonly local signin_url="${base_url}/users/sign_in"
-    readonly local csrf_token=$(curl -sS -L -c ${g_temp_folder_path}login.cookie1 "${signin_url}" | grep csrf-token | sed -e  's/.*content\=\"//g'  | sed -e 's/\" \/.*//g')
-    curl -sS -L -F "user[email]=${id}" -F "user[password]=${password}" -F "authenticity_token=${csrf_token}" -b ${g_temp_folder_path}login.cookie1 -c ${g_temp_folder_path}login.cookie2 "${signin_url}" -o ${g_temp_folder_path}test1.html
     readonly local trial_url="${base_url}trials/${trial_name}/cdisc/domain_configs/"
+    login ${trial_url}
+#    readonly local signin_url="${base_url}/users/sign_in"
+#    readonly local csrf_token=$(curl -sS -L -c ${g_temp_folder_path}login.cookie1 "${signin_url}" | grep csrf-token | sed -e  's/.*content\=\"//g'  | sed -e 's/\" \/.*//g')
+#    curl -sS -L -F "user[email]=${id}" -F "user[password]=${password}" -F "authenticity_token=${csrf_token}" -b ${g_temp_folder_path}login.cookie1 -c ${g_temp_folder_path}login.cookie2 "${signin_url}" -o ${g_temp_folder_path}test1.html
+#    readonly local trial_url="${base_url}trials/${trial_name}/cdisc/domain_configs/"
+
+
+
     #readonly local aws_dir_name=$(echo ${trial_name} | tr '[:upper:]' '[:lower:]')
     #readonly local index_html=${g_trial_path}index.html
     #echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=SHIFT_JIS">' > ${index_html}
