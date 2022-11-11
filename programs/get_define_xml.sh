@@ -8,7 +8,9 @@
 # Create index.html.
 function create_index(){
     create_index_css
-    echo '<a href="'${define_xml_url}'">'${xml_name}'</a>'>> ${index_html}
+    echo '<ol>' >> ${index_html}
+    echo '<a href="'${define_xml_url}'">'${trial_name} Define-XML'</a>'>> ${index_html}
+    echo '</ol>' >> ${index_html}
 }
 # Sign in to the URL listed in the base_url file and download the define.xml for the trial name specified in the argument.
 # $1 The sign-in ID in single quotes.
@@ -27,7 +29,7 @@ function main(){
     readonly index_html=${g_trial_path}xml_index.html
     readonly define_xml_url=${output_base_url}${aws_dir_name}/${xml_name}
     create_index
-    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" > ${g_trial_path}define.xml
+    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" > ${g_trial_path}${xml_name}
     curl -sS -b ${g_temp_folder_path}login.cookie2 "${base_url}${xsl_name}"  -o ${g_trial_path}${xsl_name}
     upload_files
     exit 0
