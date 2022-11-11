@@ -4,6 +4,8 @@
 # Download define.xml with the specified trial name. Depends on common.sh.
 # Created Date 2022.11.11
 # Revision Date 2022.11.11
+
+# Create index.html.
 function create_index(){
     create_index_css
     echo '<a href="'${define_xml_url}'">'${xml_name}'</a>'>> ${index_html}
@@ -17,7 +19,7 @@ function main(){
     readonly xml_name="define.xml"
     readonly id="$1"
     readonly trial_name="$2"
-    source ./common.sh 
+    source ./common.sh
     init
     read -p 'Password: ' password
     readonly trial_url="${base_url}trials/${trial_name}/cdisc/domain_configs/"
@@ -28,5 +30,6 @@ function main(){
     curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" > ${g_trial_path}define.xml
     curl -sS -b ${g_temp_folder_path}login.cookie2 "${base_url}${xsl_name}"  -o ${g_trial_path}${xsl_name}
     upload_files
+    exit 0
 }
-main $1 $2 $3
+main $1 $2
