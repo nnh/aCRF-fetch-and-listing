@@ -42,8 +42,9 @@ function main(){
     #echo '</ol>' >> ${index_html}
     #readonly local aCrf_head='<a href\="'
     #readonly local aCrf_foot='">aCRF<\/a>'
+    readonly local xml_name="define.xml"
     readonly local xsl_name="define2-0-0.xsl"
-    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}define.xml" | sed -e 's|/define2-0-0.xsl|define2-0-0.xsl|g' >> ${g_temp_folder_path}define.xml
+    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" >> ${g_temp_folder_path}define.xml
     curl -sS -b ${g_temp_folder_path}login.cookie2 "${base_url}${xsl_name}"  -o ${g_temp_folder_path}${xsl_name}
 }
 main $1 $2 $3
