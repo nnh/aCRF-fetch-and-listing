@@ -29,7 +29,7 @@ function main(){
     readonly index_html=${g_trial_path}xml_index.html
     readonly define_xml_url=${output_base_url}${aws_dir_name}/${xml_name}
     create_index
-    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" > ${g_trial_path}${xml_name}
+    curl -sS -b ${g_temp_folder_path}login.cookie2 "${trial_url}${xml_name}" | sed -e "s|/${xsl_name}|${xsl_name}|g" -e "s|blankcrf.pdf||g" -e "s|complexalgorithms.pdf||g" > ${g_trial_path}${xml_name}
     curl -sS -b ${g_temp_folder_path}login.cookie2 "${base_url}${xsl_name}"  -o ${g_trial_path}${xsl_name}
     upload_files
     exit 0
