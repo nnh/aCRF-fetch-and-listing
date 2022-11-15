@@ -1,24 +1,24 @@
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=SHIFT_JIS">
 <style>
-    body {font-family: sans-serif;}
-    table,
-    td {border: 1px solid #333;}
-    thead,
-    tfoot {background-color: #333;color: #fff;}
-    a {font-size:16px;color:#000000;}
+    table, th, td {border: 1px solid rgba(0,112,216,1);border-collapse: collapse;font-family: sans-serif;font-size: 18px;color: rgba(33,33,33,1);}
+    table {table-layout: fixed;width: 100%;}
+    thead {background-color: rgba(110,183,216,1);}
+    .tleft {text-align: left;}
     .tcenter {text-align: center;}
-
+    .twidth10 {width: 10%;}
 </style>
 
 <table>
     <thead>
         <tr>
-            <th>領域</th>
-            <th>プロトコールID</th>
-            <th>試験名</th>
-            <th class="tcenter">プロトコール<br>/臨床試験登録情報</th>
-            <th class="tcenter">aCRF</th>
-            <th class="tcenter">Define-XML</th>
+            <th class="tleft twidth10">領域</th>
+            <th class="tleft" width="15%">プロトコールID</th>
+            <th class="tleft">試験名</th>
+            <div>
+                <th class="tcenter twidth10">プロトコール<br>/CTR</th>
+                <th class="tcenter twidth10">aCRF</th>
+                <th class="tcenter twidth10">Define<br>-XML</th>
+            </div>
         </tr>
     </thead>
     <tbody>
